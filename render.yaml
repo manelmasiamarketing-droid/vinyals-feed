@@ -10,4 +10,4 @@ services:
       - key: LI_SLUG
         value: vinalsgrupo
       - key: REFRESH_MS
-        value: "10800000"
+        value: "28800000"
