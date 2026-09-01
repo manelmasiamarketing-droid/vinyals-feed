@@ -87,9 +87,15 @@ function escapeHtml(str) {
 
 function cardHtml(post, index) {
   const isIg = post.platform === 'instagram';
-  const thumb = post.image
-    ? `<img src="/img?u=${encodeURIComponent(post.image)}" alt="" loading="lazy">`
-    : IMG_PLACEHOLDER;
+  const poster = post.image ? `/img?u=${encodeURIComponent(post.image)}` : '';
+  let thumb;
+  if (post.video) {
+    thumb = `<video autoplay muted loop playsinline poster="${poster}" src="/video?u=${encodeURIComponent(post.video)}"></video>`;
+  } else if (post.image) {
+    thumb = `<img src="${poster}" alt="" loading="lazy">`;
+  } else {
+    thumb = IMG_PLACEHOLDER;
+  }
 
   return `
     <article class="card${index === 0 ? ' is-active' : ''}" data-index="${index}">
@@ -197,7 +203,7 @@ function renderPage() {
     aspect-ratio: 16 / 10; display: grid; place-items: center;
   }
   .thumb svg { width: 28px; height: 28px; opacity: 0.55; color: var(--text-muted); }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb img, .thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .empty { max-width: 420px; margin: 40px auto; text-align: center; color: var(--text-muted); font-size: 14px; }
 </style>
 </head>
@@ -213,30 +219,56 @@ function renderPage() {
 
       var idx = 0;
       var timer;
+      var PHOTO_MS = 8000;
+      var MAX_VIDEO_MS = 90000; // red de seguridad si un vídeo no dispara 'ended'
+
+      function scheduleNext() {
+        clearTimeout(timer);
+        var video = cards[idx].querySelector('video');
+        if (!video) {
+          timer = setTimeout(goNext, PHOTO_MS);
+          return;
+        }
+        var advanced = false;
+        var advance = function () {
+          if (advanced) return;
+          advanced = true;
+          goNext();
+        };
+        video.addEventListener('ended', advance, { once: true });
+        timer = setTimeout(advance, MAX_VIDEO_MS);
+      }
 
       function show(next) {
+        var prevVideo = cards[idx].querySelector('video');
+        if (prevVideo) {
+          prevVideo.pause();
+          prevVideo.currentTime = 0;
+        }
         cards[idx].classList.remove('is-active');
         if (dots[idx]) dots[idx].classList.remove('is-active');
         idx = next;
         cards[idx].classList.add('is-active');
         if (dots[idx]) dots[idx].classList.add('is-active');
+        var nextVideo = cards[idx].querySelector('video');
+        if (nextVideo) {
+          nextVideo.currentTime = 0;
+          nextVideo.play().catch(function () {});
+        }
+        scheduleNext();
       }
 
-      function startAuto() {
-        clearInterval(timer);
-        timer = setInterval(function () {
-          show((idx + 1) % cards.length);
-        }, 8000);
+      function goNext() {
+        show((idx + 1) % cards.length);
       }
 
       dots.forEach(function (dot, i) {
         dot.addEventListener('click', function () {
           show(i);
-          startAuto();
         });
       });
 
-      startAuto();
+      scheduleNext();
     })();
   </script>
 </body>
@@ -274,6 +306,30 @@ app.get('/img', async (req, res) => {
     res.send(buf);
   } catch (err) {
     console.error('Proxy de imagen falló:', err.message);
+    res.sendStatus(502);
+  }
+});
+
+app.get('/video', async (req, res) => {
+  const u = req.query.u;
+  if (typeof u !== 'string' || !u.startsWith('https://')) {
+    return res.sendStatus(400);
+  }
+  try {
+    const upstream = await fetch(u, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        Referer: 'https://www.instagram.com/'
+      }
+    });
+    if (!upstream.ok) return res.sendStatus(upstream.status);
+    const buf = Buffer.from(await upstream.arrayBuffer());
+    res.set('Content-Type', upstream.headers.get('content-type') || 'video/mp4');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(buf);
+  } catch (err) {
+    console.error('Proxy de vídeo falló:', err.message);
     res.sendStatus(502);
   }
 });
