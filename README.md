@@ -1,15 +1,21 @@
 # Viñals Feed
 
-Página que muestra las 6 publicaciones más recientes de Instagram (@vinals1906)
-y de LinkedIn (Grupo Viñals), alternadas, en un carrusel de una tarjeta a la
-vez (cambia cada 8s) estilo widget social.
+Página pensada para digital signage (pantalla desatendida, sin clics) que
+muestra las 6 publicaciones más recientes de Instagram (@vinals1906) y de
+LinkedIn (Grupo Viñals), alternadas, en un carrusel de una tarjeta a la vez.
+Las fotos duran 8s; los reels reproducen el vídeo real (sin audio, en bucle
+silencioso) y la tarjeta dura lo que dura el vídeo en vez de un tiempo fijo.
 
 ## Cómo obtiene los datos
 
 - **Instagram**: no tiene API pública de lectura sin cuenta de negocio conectada,
   así que se usa un navegador headless (Puppeteer) que visita el perfil público,
   saca los últimos 6 posts del grid y entra en cada uno para leer el pie de
-  foto real (no está disponible en la vista de grid).
+  foto real (no está disponible en la vista de grid). Para los reels, además
+  saca la URL directa del vídeo (sin audio — va en un track aparte en el
+  manifiesto DASH que usa Instagram) leyendo el HTML de la página; el modal
+  de "Regístrate para ver más" bloquea el reproductor visual pero no evita
+  leer esa URL del código fuente.
 - **LinkedIn**: la página de empresa se sirve renderizada por el servidor, así
   que se lee con un `fetch` simple + `cheerio` (sin navegador).
 
@@ -81,3 +87,9 @@ rellenar el formulario a mano.
   una falla — revisa los logs de Render si un día deja de actualizarse.
 - `/api/feed` devuelve el estado del caché en JSON (incluye `errors` si algo
   falló en el último refresco) — útil para depurar sin mirar logs.
+- Los vídeos se sirven vía `/video` igual que las imágenes vía `/img`
+  (el servidor los descarga enteros y los reenvía, sin soporte de rango
+  HTTP). Para clips cortos de reel (unos pocos MB) va bien; si algún día
+  se usan vídeos mucho más largos, esto habría que revisarlo.
+- Igual que las imágenes, la URL del vídeo caduca a las pocas horas —
+  por eso se vuelve a sacar en cada refresco, no vale guardarla más tiempo.
