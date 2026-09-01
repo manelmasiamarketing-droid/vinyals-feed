@@ -32,8 +32,8 @@ async function refresh() {
   refreshing = true;
 
   const [ig, li] = await Promise.allSettled([
-    scrapeInstagram(IG_USERNAME, { count: 2 }),
-    scrapeLinkedIn(LI_SLUG, { count: 2 })
+    scrapeInstagram(IG_USERNAME, { count: 6 }),
+    scrapeLinkedIn(LI_SLUG, { count: 6 })
   ]);
 
   const errors = {};
@@ -226,7 +226,7 @@ function renderPage() {
         clearInterval(timer);
         timer = setInterval(function () {
           show((idx + 1) % cards.length);
-        }, 6000);
+        }, 8000);
       }
 
       dots.forEach(function (dot, i) {
