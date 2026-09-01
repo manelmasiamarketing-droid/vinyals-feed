@@ -85,14 +85,14 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-function cardHtml(post) {
+function cardHtml(post, index) {
   const isIg = post.platform === 'instagram';
   const thumb = post.image
     ? `<img src="/img?u=${encodeURIComponent(post.image)}" alt="" loading="lazy">`
     : IMG_PLACEHOLDER;
 
   return `
-    <article class="card">
+    <article class="card${index === 0 ? ' is-active' : ''}" data-index="${index}">
       <div class="card-head">
         <span class="avatar ${isIg ? 'ig' : 'li'}">V</span>
         <div class="card-who">
@@ -108,10 +108,17 @@ function cardHtml(post) {
   `;
 }
 
+function dotHtml(_post, index) {
+  return `<button class="dot${index === 0 ? ' is-active' : ''}" data-index="${index}" aria-label="Publicación ${index + 1}"></button>`;
+}
+
 function renderPage() {
   const posts = mergedPosts();
   const body = posts.length
-    ? posts.map(cardHtml).join('\n')
+    ? `
+    <div class="carousel-track">${posts.map(cardHtml).join('\n')}</div>
+    ${posts.length > 1 ? `<div class="carousel-dots">${posts.map(dotHtml).join('')}</div>` : ''}
+  `
     : `<p class="empty">No se pudieron cargar las publicaciones todavía. Vuelve a intentarlo en unos minutos.</p>`;
 
   return `<!doctype html>
@@ -146,7 +153,19 @@ function renderPage() {
     font: 400 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica Neue, Arial, sans-serif;
     padding: 24px 16px;
   }
-  .feed { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  .feed { max-width: 420px; margin: 0 auto; }
+  .carousel-track { display: grid; }
+  .carousel-track .card { grid-area: 1 / 1; opacity: 0; visibility: hidden; pointer-events: none; }
+  .carousel-track .card.is-active { opacity: 1; visibility: visible; pointer-events: auto; }
+  @media (prefers-reduced-motion: no-preference) {
+    .carousel-track .card { transition: opacity 0.4s ease; }
+  }
+  .carousel-dots { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
+  .dot {
+    width: 7px; height: 7px; padding: 0; border: none; border-radius: 50%;
+    background: var(--border); cursor: pointer;
+  }
+  .dot.is-active { background: var(--link); }
   .card {
     background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
     box-shadow: 0 1px 3px var(--shadow); padding: 14px 16px 16px;
@@ -167,7 +186,10 @@ function renderPage() {
   .plat-icon svg { width: 12px; height: 12px; fill: #fff; }
   .plat-icon.ig { background: linear-gradient(135deg, #f4b860, #d63a7a 55%, #7c3aab); }
   .plat-icon.li { background: #0a66c2; }
-  .card-text { font-size: 14.5px; line-height: 1.5; margin: 0 0 4px; white-space: pre-wrap; }
+  .card-text {
+    font-size: 14.5px; line-height: 1.5; margin: 0 0 4px; white-space: pre-wrap;
+    display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+  }
   .read-more { color: var(--link); text-decoration: none; font-size: 14.5px; }
   .read-more:hover { text-decoration: underline; }
   .thumb {
@@ -183,6 +205,40 @@ function renderPage() {
   <div class="feed">
     ${body}
   </div>
+  <script>
+    (function () {
+      var cards = document.querySelectorAll('.carousel-track .card');
+      var dots = document.querySelectorAll('.dot');
+      if (cards.length < 2) return;
+
+      var idx = 0;
+      var timer;
+
+      function show(next) {
+        cards[idx].classList.remove('is-active');
+        if (dots[idx]) dots[idx].classList.remove('is-active');
+        idx = next;
+        cards[idx].classList.add('is-active');
+        if (dots[idx]) dots[idx].classList.add('is-active');
+      }
+
+      function startAuto() {
+        clearInterval(timer);
+        timer = setInterval(function () {
+          show((idx + 1) % cards.length);
+        }, 6000);
+      }
+
+      dots.forEach(function (dot, i) {
+        dot.addEventListener('click', function () {
+          show(i);
+          startAuto();
+        });
+      });
+
+      startAuto();
+    })();
+  </script>
 </body>
 </html>`;
 }
