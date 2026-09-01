@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: vinals-feed
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: IG_USERNAME
+        value: vinals1906
+      - key: LI_SLUG
+        value: vinalsgrupo
+      - key: REFRESH_MS
+        value: "10800000"
