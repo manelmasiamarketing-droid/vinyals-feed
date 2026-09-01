@@ -90,7 +90,7 @@ function cardHtml(post, index) {
   const poster = post.image ? `/img?u=${encodeURIComponent(post.image)}` : '';
   let thumb;
   if (post.video) {
-    thumb = `<video autoplay muted loop playsinline poster="${poster}" src="/video?u=${encodeURIComponent(post.video)}"></video>`;
+    thumb = `<video autoplay muted playsinline poster="${poster}" src="/video?u=${encodeURIComponent(post.video)}"></video>`;
   } else if (post.image) {
     thumb = `<img src="${poster}" alt="" loading="lazy">`;
   } else {
@@ -292,11 +292,14 @@ app.get('/img', async (req, res) => {
     return res.sendStatus(400);
   }
   try {
+    const referer = u.includes('licdn.com')
+      ? 'https://www.linkedin.com/'
+      : 'https://www.instagram.com/';
     const upstream = await fetch(u, {
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-        Referer: 'https://www.instagram.com/'
+        Referer: referer
       }
     });
     if (!upstream.ok) return res.sendStatus(upstream.status);
