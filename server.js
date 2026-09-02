@@ -32,7 +32,7 @@ async function refresh() {
   refreshing = true;
 
   const [ig, li] = await Promise.allSettled([
-    scrapeInstagram(IG_USERNAME, { count: 4 }),
+    scrapeInstagram(IG_USERNAME, { count: 6 }),
     scrapeLinkedIn(LI_SLUG, { count: 6 })
   ]);
 
@@ -85,7 +85,7 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-function cardHtml(post, index) {
+function cardHtml(post) {
   const isIg = post.platform === 'instagram';
   const poster = post.image ? `/img?u=${encodeURIComponent(post.image)}` : '';
   let thumb;
@@ -98,7 +98,7 @@ function cardHtml(post, index) {
   }
 
   return `
-    <article class="card${index === 0 ? ' is-active' : ''}" data-index="${index}">
+    <article class="card">
       <div class="card-head">
         <span class="avatar ${isIg ? 'ig' : 'li'}">V</span>
         <div class="card-who">
@@ -114,16 +114,30 @@ function cardHtml(post, index) {
   `;
 }
 
-function dotHtml(_post, index) {
-  return `<button class="dot${index === 0 ? ' is-active' : ''}" data-index="${index}" aria-label="Publicación ${index + 1}"></button>`;
+function chunk(array, size) {
+  const groups = [];
+  for (let i = 0; i < array.length; i += size) {
+    groups.push(array.slice(i, i + size));
+  }
+  return groups;
+}
+
+function slideHtml(pair, index) {
+  const cards = pair.map((post) => cardHtml(post)).join('\n');
+  return `<div class="slide${index === 0 ? ' is-active' : ''}" data-index="${index}">${cards}</div>`;
+}
+
+function dotHtml(_slide, index) {
+  return `<button class="dot${index === 0 ? ' is-active' : ''}" data-index="${index}" aria-label="Publicaciones ${index + 1}"></button>`;
 }
 
 function renderPage() {
   const posts = mergedPosts();
-  const body = posts.length
+  const slides = chunk(posts, 2);
+  const body = slides.length
     ? `
-    <div class="carousel-track">${posts.map(cardHtml).join('\n')}</div>
-    ${posts.length > 1 ? `<div class="carousel-dots">${posts.map(dotHtml).join('')}</div>` : ''}
+    <div class="carousel-track">${slides.map(slideHtml).join('\n')}</div>
+    ${slides.length > 1 ? `<div class="carousel-dots">${slides.map(dotHtml).join('')}</div>` : ''}
   `
     : `<p class="empty">No se pudieron cargar las publicaciones todavía. Vuelve a intentarlo en unos minutos.</p>`;
 
@@ -161,10 +175,13 @@ function renderPage() {
   }
   .feed { max-width: 420px; margin: 0 auto; }
   .carousel-track { display: grid; }
-  .carousel-track .card { grid-area: 1 / 1; opacity: 0; visibility: hidden; pointer-events: none; }
-  .carousel-track .card.is-active { opacity: 1; visibility: visible; pointer-events: auto; }
+  .carousel-track .slide {
+    grid-area: 1 / 1; opacity: 0; visibility: hidden; pointer-events: none;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .carousel-track .slide.is-active { opacity: 1; visibility: visible; pointer-events: auto; }
   @media (prefers-reduced-motion: no-preference) {
-    .carousel-track .card { transition: opacity 0.4s ease; }
+    .carousel-track .slide { transition: opacity 0.4s ease; }
   }
   .carousel-dots { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
   .dot {
@@ -213,53 +230,57 @@ function renderPage() {
   </div>
   <script>
     (function () {
-      var cards = document.querySelectorAll('.carousel-track .card');
+      var slides = document.querySelectorAll('.carousel-track .slide');
       var dots = document.querySelectorAll('.dot');
-      if (cards.length < 2) return;
+      if (slides.length < 2) return;
 
       var idx = 0;
       var timer;
       var PHOTO_MS = 8000;
-      var MAX_VIDEO_MS = 90000; // red de seguridad si un vídeo no dispara 'ended'
+      var MAX_VIDEO_MS = 90000; // red de seguridad si algún vídeo no dispara 'ended'
 
       function scheduleNext() {
         clearTimeout(timer);
-        var video = cards[idx].querySelector('video');
-        if (!video) {
+        var videos = slides[idx].querySelectorAll('video');
+        if (!videos.length) {
           timer = setTimeout(goNext, PHOTO_MS);
           return;
         }
+        var remaining = videos.length;
         var advanced = false;
         var advance = function () {
           if (advanced) return;
           advanced = true;
           goNext();
         };
-        video.addEventListener('ended', advance, { once: true });
+        videos.forEach(function (video) {
+          video.addEventListener('ended', function () {
+            remaining -= 1;
+            if (remaining <= 0) advance();
+          }, { once: true });
+        });
         timer = setTimeout(advance, MAX_VIDEO_MS);
       }
 
       function show(next) {
-        var prevVideo = cards[idx].querySelector('video');
-        if (prevVideo) {
-          prevVideo.pause();
-          prevVideo.currentTime = 0;
-        }
-        cards[idx].classList.remove('is-active');
+        slides[idx].querySelectorAll('video').forEach(function (video) {
+          video.pause();
+          video.currentTime = 0;
+        });
+        slides[idx].classList.remove('is-active');
         if (dots[idx]) dots[idx].classList.remove('is-active');
         idx = next;
-        cards[idx].classList.add('is-active');
+        slides[idx].classList.add('is-active');
         if (dots[idx]) dots[idx].classList.add('is-active');
-        var nextVideo = cards[idx].querySelector('video');
-        if (nextVideo) {
-          nextVideo.currentTime = 0;
-          nextVideo.play().catch(function () {});
-        }
+        slides[idx].querySelectorAll('video').forEach(function (video) {
+          video.currentTime = 0;
+          video.play().catch(function () {});
+        });
         scheduleNext();
       }
 
       function goNext() {
-        show((idx + 1) % cards.length);
+        show((idx + 1) % slides.length);
       }
 
       dots.forEach(function (dot, i) {
