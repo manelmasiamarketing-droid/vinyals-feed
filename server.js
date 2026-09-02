@@ -32,7 +32,7 @@ async function refresh() {
   refreshing = true;
 
   const [ig, li] = await Promise.allSettled([
-    scrapeInstagram(IG_USERNAME, { count: 6 }),
+    scrapeInstagram(IG_USERNAME, { count: 4 }),
     scrapeLinkedIn(LI_SLUG, { count: 6 })
   ]);
 
