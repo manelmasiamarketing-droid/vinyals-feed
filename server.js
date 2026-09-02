@@ -168,60 +168,62 @@ function renderPage() {
     --shadow: rgba(0, 0, 0, 0.4); --text: #e4e6eb; --text-muted: #b0b3b8; --link: #6ea8fe;
   }
   * { box-sizing: border-box; }
+  html, body { height: 100%; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
-    font: 400 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica Neue, Arial, sans-serif;
-    padding: 24px 16px;
+    font: 400 20px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica Neue, Arial, sans-serif;
+    padding: 32px;
+    display: flex; align-items: center; overflow: hidden;
   }
-  .feed { max-width: 420px; margin: 0 auto; }
+  .feed { width: 100%; max-width: 700px; margin: 0 auto; }
   .carousel-track { display: grid; }
   .carousel-track .slide {
     grid-area: 1 / 1; opacity: 0; visibility: hidden; pointer-events: none;
-    display: flex; flex-direction: column; gap: 16px;
+    display: flex; flex-direction: column; gap: 24px;
   }
   .carousel-track .slide.is-active { opacity: 1; visibility: visible; pointer-events: auto; }
   @media (prefers-reduced-motion: no-preference) {
     .carousel-track .slide { transition: opacity 0.4s ease; }
   }
-  .carousel-dots { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
+  .carousel-dots { display: flex; justify-content: center; gap: 10px; margin-top: 18px; }
   .dot {
-    width: 7px; height: 7px; padding: 0; border: none; border-radius: 50%;
+    width: 11px; height: 11px; padding: 0; border: none; border-radius: 50%;
     background: var(--border); cursor: pointer;
   }
   .dot.is-active { background: var(--link); }
   .card {
-    background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
-    box-shadow: 0 1px 3px var(--shadow); padding: 14px 16px 16px;
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 2px 6px var(--shadow); padding: 22px 24px 24px;
   }
-  .card-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  .card-head { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
   .avatar {
-    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
-    display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 14px; background: #555;
+    width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0;
+    display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 22px; background: #555;
   }
   .avatar.ig { background: linear-gradient(135deg, #f4b860, #d63a7a 55%, #7c3aab); }
   .avatar.li { background: #0a66c2; }
   .card-who { flex: 1; min-width: 0; }
-  .card-name { font-weight: 700; font-size: 14px; }
-  .card-time { font-size: 12.5px; color: var(--text-muted); }
+  .card-name { font-weight: 700; font-size: 24px; }
+  .card-time { font-size: 18px; color: var(--text-muted); }
   .plat-icon {
-    width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; display: grid; place-items: center;
+    width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; display: grid; place-items: center;
   }
-  .plat-icon svg { width: 12px; height: 12px; fill: #fff; }
+  .plat-icon svg { width: 18px; height: 18px; fill: #fff; }
   .plat-icon.ig { background: linear-gradient(135deg, #f4b860, #d63a7a 55%, #7c3aab); }
   .plat-icon.li { background: #0a66c2; }
   .card-text {
-    font-size: 14.5px; line-height: 1.5; margin: 0 0 4px; white-space: pre-wrap;
-    display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+    font-size: 21px; line-height: 1.5; margin: 0 0 8px; white-space: pre-wrap;
+    display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;
   }
-  .read-more { color: var(--link); text-decoration: none; font-size: 14.5px; }
+  .read-more { color: var(--link); text-decoration: none; font-size: 19px; }
   .read-more:hover { text-decoration: underline; }
   .thumb {
-    margin-top: 10px; border-radius: 6px; overflow: hidden; background: var(--border);
-    aspect-ratio: 16 / 10; display: grid; place-items: center;
+    margin-top: 16px; border-radius: 10px; overflow: hidden; background: var(--border);
+    aspect-ratio: 1 / 1; display: grid; place-items: center;
   }
-  .thumb svg { width: 28px; height: 28px; opacity: 0.55; color: var(--text-muted); }
+  .thumb svg { width: 44px; height: 44px; opacity: 0.55; color: var(--text-muted); }
   .thumb img, .thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .empty { max-width: 420px; margin: 40px auto; text-align: center; color: var(--text-muted); font-size: 14px; }
+  .empty { max-width: 700px; margin: 40px auto; text-align: center; color: var(--text-muted); font-size: 20px; }
 </style>
 </head>
 <body>
