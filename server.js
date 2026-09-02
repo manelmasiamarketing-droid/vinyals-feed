@@ -147,6 +147,7 @@ function renderPage() {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Viñals Feed</title>
+<link rel="icon" href="/favicon.ico">
 <style>
   :root {
     --bg: #ffffff;
@@ -204,7 +205,7 @@ function renderPage() {
   .avatar.ig { background: linear-gradient(135deg, #f4b860, #d63a7a 55%, #7c3aab); }
   .avatar.li { background: #0a66c2; }
   .card-who { flex: 1; min-width: 0; }
-  .card-name { font-weight: 700; font-size: 24px; }
+  .card-name { font-weight: 700; font-size: 19px; }
   .card-time { font-size: 18px; color: var(--text-muted); }
   .plat-icon {
     width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; display: grid; place-items: center;
@@ -308,6 +309,28 @@ app.get('/', (req, res) => {
 
 app.get('/api/feed', (req, res) => {
   res.json(cache);
+});
+
+app.get('/favicon.ico', async (req, res) => {
+  const logo = cache.linkedin?.logo;
+  if (!logo) return res.sendStatus(404);
+  try {
+    const upstream = await fetch(logo, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        Referer: 'https://www.linkedin.com/'
+      }
+    });
+    if (!upstream.ok) return res.sendStatus(upstream.status);
+    const buf = Buffer.from(await upstream.arrayBuffer());
+    res.set('Content-Type', upstream.headers.get('content-type') || 'image/jpeg');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(buf);
+  } catch (err) {
+    console.error('Proxy de favicon falló:', err.message);
+    res.sendStatus(502);
+  }
 });
 
 app.get('/img', async (req, res) => {
