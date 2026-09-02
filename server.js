@@ -194,8 +194,9 @@ function renderPage() {
   .card {
     background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
     box-shadow: 0 2px 6px var(--shadow); padding: 22px 24px 24px;
+    height: 900px; display: flex; flex-direction: column;
   }
-  .card-head { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
+  .card-head { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 14px; flex-shrink: 0; }
   .avatar {
     width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0;
     display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 22px; background: #555;
@@ -212,14 +213,14 @@ function renderPage() {
   .plat-icon.ig { background: linear-gradient(135deg, #f4b860, #d63a7a 55%, #7c3aab); }
   .plat-icon.li { background: #0a66c2; }
   .card-text {
-    font-size: 21px; line-height: 1.5; margin: 0 0 8px; white-space: pre-wrap;
+    font-size: 21px; line-height: 1.5; margin: 0 0 8px; white-space: pre-wrap; flex-shrink: 0;
     display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
   }
-  .read-more { color: var(--link); text-decoration: none; font-size: 19px; }
+  .read-more { color: var(--link); text-decoration: none; font-size: 19px; flex-shrink: 0; }
   .read-more:hover { text-decoration: underline; }
   .thumb {
     margin-top: 16px; border-radius: 10px; overflow: hidden; background: var(--border);
-    aspect-ratio: 9 / 16; display: grid; place-items: center;
+    flex: 1; min-height: 0; display: grid; place-items: center;
   }
   .thumb svg { width: 44px; height: 44px; opacity: 0.55; color: var(--text-muted); }
   .thumb img, .thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
