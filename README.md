@@ -2,10 +2,11 @@
 
 Página pensada para digital signage (pantalla desatendida, sin clics) que
 muestra las 6 publicaciones más recientes de Instagram (@vinals1906) y las 6
-de LinkedIn (Grupo Viñals) en un carrusel de 2 tarjetas a la vez (una de cada
-red), rotando por las 6 parejas. Las fotos duran 8s; los vídeos (reels de
-Instagram y vídeos nativos de LinkedIn) reproducen el clip real sin audio, y
-la pareja dura lo que dure el vídeo más largo en vez de un tiempo fijo.
+de LinkedIn (Grupo Viñals) en un carrusel de 1 publicación a la vez, rotando
+por las 12. El texto se recorta a 3 líneas. Las fotos duran 8s; los vídeos
+(reels de Instagram y vídeos nativos de LinkedIn) reproducen el clip real sin
+audio y la tarjeta dura lo que dure el vídeo en vez de un tiempo fijo. La
+imagen/vídeo va en formato 9:16 (vertical, el nativo de los reels).
 
 Tamaños y proporciones ajustados para una pantalla vertical de 750×2160px
 (fuentes e imágenes grandes, pensadas para verse de pie/desde lejos). Si el
@@ -35,6 +36,25 @@ frecuencia. El caché (`REFRESH_MS`, 8h por defecto = 3 veces al día) existe
 justamente para minimizar esas peticiones: se guarda en `data/cache.json` y,
 mientras no pasen esas 8h, la página se sirve entera desde ahí sin volver a
 llamar a Instagram ni LinkedIn.
+
+⚠️ **Instagram bloquea la IP de Render**: en producción, Instagram redirige
+las peticiones desde el servidor de Render a la página de login
+(`/accounts/login/...`) en vez de servir el perfil público — trata las IPs
+de datacenter como sospechosas. No es un problema de timeout ni de código;
+ningún ajuste de tiempos de espera lo arregla porque ni siquiera llega a
+cargar el perfil. Opciones reales para solucionarlo:
+1. **API oficial de Meta (Graph API)**: requiere conectar la cuenta de
+   Instagram a una Página de Facebook como cuenta Business/Creator y crear
+   una app en Meta for Developers — hay que hacerlo vosotros (no puedo crear
+   cuentas en vuestro nombre), pero es la vía fiable a largo plazo.
+2. **Proxy residencial/móvil** (de pago) delante de las peticiones de
+   Puppeteer, para que Instagram no vea una IP de datacenter. Añade coste y
+   complejidad, sale del "gratis".
+3. **Aceptar que Instagram no funcione desde Render** y quedarse solo con
+   LinkedIn — la página ya degrada así de forma automática si falla.
+El error exacto queda guardado en `/api/feed` → `errors.instagram` cada vez
+que falla, con el título/URL/texto de la página que sirvió Instagram, para
+diagnosticar sin acceder a los logs de Render.
 
 ⚠️ **Ojo con el plan free de Render**: su disco es efímero — cada vez que el
 contenedor se reinicia (incluido el "despertar" tras dormirse por
