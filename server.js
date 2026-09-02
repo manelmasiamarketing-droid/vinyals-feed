@@ -100,7 +100,7 @@ function cardHtml(post) {
   return `
     <article class="card">
       <div class="card-head">
-        <span class="avatar ${isIg ? 'ig' : 'li'}">V</span>
+        <img class="avatar" src="/favicon.ico" alt="Viñals">
         <div class="card-who">
           <div class="card-name">${escapeHtml(post.name)}</div>
           <div class="card-time">${escapeHtml(post.date)}</div>
@@ -202,10 +202,8 @@ ${autoReload}
   .card-head { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 14px; flex-shrink: 0; }
   .avatar {
     width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0;
-    display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 22px; background: #555;
+    object-fit: cover; background: var(--border);
   }
-  .avatar.ig { background: linear-gradient(135deg, #f4b860, #d63a7a 55%, #7c3aab); }
-  .avatar.li { background: #0a66c2; }
   .card-who { flex: 1; min-width: 0; }
   .card-name { font-weight: 700; font-size: 19px; }
   .card-time { font-size: 18px; color: var(--text-muted); }
