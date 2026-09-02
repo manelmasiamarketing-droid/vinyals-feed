@@ -163,7 +163,7 @@ ${autoReload}
 <style>
   :root {
     --bg: #ffffff;
-    --card-bg: #ffffff;
+    --card-bg: #f1f1f1;
     --border: #e6e6e6;
     --shadow: rgba(24, 24, 24, 0.06);
     --text: #1c1e21;
