@@ -107,6 +107,10 @@ rellenar el formulario a mano.
 
 ## Limitaciones a tener en cuenta
 
+- El favicon es el logo real de Viñals, sacado del scrape de LinkedIn
+  (`cache.linkedin.logo`) y servido vía `/favicon.ico`. Hasta que no haya
+  un primer scrape de LinkedIn con éxito, esa ruta devuelve 404 y el
+  navegador usa su icono por defecto — es normal en el primer arranque.
 - El plan free de Render "duerme" el servicio tras ~15 min sin tráfico; la
   primera visita tras un rato inactivo tardará unos segundos más (arranca el
   contenedor + lanza Chromium).
