@@ -162,6 +162,7 @@ function renderPage() {
 ${autoReload}
 <style>
   :root {
+    color-scheme: light;
     --bg: #ffffff;
     --card-bg: #f1f1f1;
     --border: #e6e6e6;
@@ -169,16 +170,6 @@ ${autoReload}
     --text: #1c1e21;
     --text-muted: #8a8d91;
     --link: #385898;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #18191a; --card-bg: #242526; --border: #3a3b3c;
-      --shadow: rgba(0, 0, 0, 0.4); --text: #e4e6eb; --text-muted: #b0b3b8; --link: #6ea8fe;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #18191a; --card-bg: #242526; --border: #3a3b3c;
-    --shadow: rgba(0, 0, 0, 0.4); --text: #e4e6eb; --text-muted: #b0b3b8; --link: #6ea8fe;
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
