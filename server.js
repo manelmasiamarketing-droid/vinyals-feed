@@ -133,7 +133,7 @@ function dotHtml(_slide, index) {
 
 function renderPage() {
   const posts = mergedPosts();
-  const slides = chunk(posts, 2);
+  const slides = chunk(posts, 1);
   const body = slides.length
     ? `
     <div class="carousel-track">${slides.map(slideHtml).join('\n')}</div>
@@ -213,13 +213,13 @@ function renderPage() {
   .plat-icon.li { background: #0a66c2; }
   .card-text {
     font-size: 21px; line-height: 1.5; margin: 0 0 8px; white-space: pre-wrap;
-    display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
   }
   .read-more { color: var(--link); text-decoration: none; font-size: 19px; }
   .read-more:hover { text-decoration: underline; }
   .thumb {
     margin-top: 16px; border-radius: 10px; overflow: hidden; background: var(--border);
-    aspect-ratio: 1 / 1; display: grid; place-items: center;
+    aspect-ratio: 9 / 16; display: grid; place-items: center;
   }
   .thumb svg { width: 44px; height: 44px; opacity: 0.55; color: var(--text-muted); }
   .thumb img, .thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
