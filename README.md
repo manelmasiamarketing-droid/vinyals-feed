@@ -1,10 +1,11 @@
 # Viñals Feed
 
 Página pensada para digital signage (pantalla desatendida, sin clics) que
-muestra las 6 publicaciones más recientes de Instagram (@vinals1906) y de
-LinkedIn (Grupo Viñals), alternadas, en un carrusel de una tarjeta a la vez.
-Las fotos duran 8s; los reels reproducen el vídeo real (sin audio, en bucle
-silencioso) y la tarjeta dura lo que dura el vídeo en vez de un tiempo fijo.
+muestra las 6 publicaciones más recientes de Instagram (@vinals1906) y las 6
+de LinkedIn (Grupo Viñals) en un carrusel de 2 tarjetas a la vez (una de cada
+red), rotando por las 6 parejas. Las fotos duran 8s; los vídeos (reels de
+Instagram y vídeos nativos de LinkedIn) reproducen el clip real sin audio, y
+la pareja dura lo que dure el vídeo más largo en vez de un tiempo fijo.
 
 ## Cómo obtiene los datos
 
@@ -17,7 +18,10 @@ silencioso) y la tarjeta dura lo que dura el vídeo en vez de un tiempo fijo.
   de "Regístrate para ver más" bloquea el reproductor visual pero no evita
   leer esa URL del código fuente.
 - **LinkedIn**: la página de empresa se sirve renderizada por el servidor, así
-  que se lee con un `fetch` simple + `cheerio` (sin navegador).
+  que se lee con un `fetch` simple + `cheerio` (sin navegador). Cuando un post
+  lleva vídeo nativo, LinkedIn lo incrusta directamente en el HTML (un
+  `<video data-sources="[...]">` con varias calidades en JSON) — sin login
+  wall de por medio, así que sacarlo es más simple que en Instagram.
 
 Ambos son **scraping de páginas públicas, no APIs oficiales**. LinkedIn prohíbe
 el scraping en sus términos de servicio; esto puede romperse si LinkedIn o
