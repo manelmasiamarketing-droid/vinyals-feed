@@ -139,7 +139,8 @@ function renderPage() {
     <div class="carousel-track">${slides.map(slideHtml).join('\n')}</div>
     ${slides.length > 1 ? `<div class="carousel-dots">${slides.map(dotHtml).join('')}</div>` : ''}
   `
-    : `<p class="empty">No se pudieron cargar las publicaciones todavía. Vuelve a intentarlo en unos minutos.</p>`;
+    : `<div class="empty"><div class="spinner"></div><p>Loading…</p></div>`;
+  const autoReload = slides.length ? '' : '<meta http-equiv="refresh" content="30">';
 
   return `<!doctype html>
 <html lang="es">
@@ -147,7 +148,8 @@ function renderPage() {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Viñals Feed</title>
-<link rel="icon" href="/favicon.ico">
+<link rel="icon" href="/favicon.ico" type="image/jpeg">
+${autoReload}
 <style>
   :root {
     --bg: #ffffff;
@@ -225,7 +227,18 @@ function renderPage() {
   }
   .thumb svg { width: 44px; height: 44px; opacity: 0.55; color: var(--text-muted); }
   .thumb img, .thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .empty { max-width: 700px; margin: 40px auto; text-align: center; color: var(--text-muted); font-size: 20px; }
+  .empty {
+    max-width: 700px; margin: 0 auto; text-align: center; color: var(--text-muted); font-size: 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 18px;
+  }
+  .spinner {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 4px solid var(--border); border-top-color: var(--link);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .spinner { animation: spin 0.8s linear infinite; }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
