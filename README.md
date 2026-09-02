@@ -7,6 +7,11 @@ red), rotando por las 6 parejas. Las fotos duran 8s; los vídeos (reels de
 Instagram y vídeos nativos de LinkedIn) reproducen el clip real sin audio, y
 la pareja dura lo que dure el vídeo más largo en vez de un tiempo fijo.
 
+Tamaños y proporciones ajustados para una pantalla vertical de 750×2160px
+(fuentes e imágenes grandes, pensadas para verse de pie/desde lejos). Si el
+reproductor real usa otra resolución, hay que reajustar los tamaños en
+`server.js` (`<style>` dentro de `renderPage()`).
+
 ## Cómo obtiene los datos
 
 - **Instagram**: no tiene API pública de lectura sin cuenta de negocio conectada,
