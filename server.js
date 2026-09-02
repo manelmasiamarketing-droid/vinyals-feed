@@ -31,26 +31,36 @@ async function refresh() {
   if (refreshing) return;
   refreshing = true;
 
-  const [ig, li] = await Promise.allSettled([
-    scrapeInstagram(IG_USERNAME, { count: 6 }),
-    scrapeLinkedIn(LI_SLUG, { count: 6 })
-  ]);
+  // Instagram puede tardar ~45s en fallar (timeout esperando un grid que
+  // nunca llega por el bloqueo de IP), mientras que LinkedIn responde en
+  // ~2s. Si esperásemos a que ambas acabaran antes de tocar la caché, la
+  // página se quedaría "vacía" (recargando cada 30s) esos 45s enteros en
+  // cada refresco, aunque LinkedIn ya tuviera datos listos hace rato. Por
+  // eso cada red actualiza `cache` en cuanto termina, no cuando terminan
+  // las dos.
+  const errors = { ...cache.errors };
 
-  const errors = {};
+  const igDone = scrapeInstagram(IG_USERNAME, { count: 6 })
+    .then((data) => {
+      cache.instagram = data;
+      delete errors.instagram;
+    })
+    .catch((err) => {
+      errors.instagram = err.message;
+      console.error('Instagram scrape falló:', err);
+    });
 
-  if (ig.status === 'fulfilled') {
-    cache.instagram = ig.value;
-  } else {
-    errors.instagram = ig.reason.message;
-    console.error('Instagram scrape falló:', ig.reason);
-  }
+  const liDone = scrapeLinkedIn(LI_SLUG, { count: 6 })
+    .then((data) => {
+      cache.linkedin = data;
+      delete errors.linkedin;
+    })
+    .catch((err) => {
+      errors.linkedin = err.message;
+      console.error('LinkedIn scrape falló:', err);
+    });
 
-  if (li.status === 'fulfilled') {
-    cache.linkedin = li.value;
-  } else {
-    errors.linkedin = li.reason.message;
-    console.error('LinkedIn scrape falló:', li.reason);
-  }
+  await Promise.all([igDone, liDone]);
 
   cache.updatedAt = Date.now();
   cache.errors = errors;
