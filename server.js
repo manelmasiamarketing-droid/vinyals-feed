@@ -173,7 +173,7 @@ function renderPage() {
     margin: 0; background: var(--bg); color: var(--text);
     font: 400 20px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica Neue, Arial, sans-serif;
     padding: 32px;
-    display: flex; align-items: center; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
   }
   .feed { width: 100%; max-width: 700px; margin: 0 auto; }
   .carousel-track { display: grid; }
@@ -194,7 +194,7 @@ function renderPage() {
   .card {
     background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
     box-shadow: 0 2px 6px var(--shadow); padding: 22px 24px 24px;
-    height: 900px; display: flex; flex-direction: column;
+    height: 800px; display: flex; flex-direction: column;
   }
   .card-head { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 14px; flex-shrink: 0; }
   .avatar {
