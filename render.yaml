@@ -11,3 +11,7 @@ services:
         value: vinalsgrupo
       - key: REFRESH_MS
         value: "28800000"
+      - key: IG_BUSINESS_ID
+        value: "17841403980877254"
+      - key: IG_ACCESS_TOKEN
+        sync: false
