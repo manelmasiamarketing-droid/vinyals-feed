@@ -143,7 +143,7 @@ function dotHtml(_slide, index) {
 
 function renderPage() {
   const posts = mergedPosts();
-  const slides = chunk(posts, 1);
+  const slides = chunk(posts, 2);
   const body = slides.length
     ? `
     <div class="carousel-track">${slides.map(slideHtml).join('\n')}</div>
