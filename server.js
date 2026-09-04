@@ -206,7 +206,7 @@ ${autoReload}
     object-fit: cover; background: var(--border);
   }
   .card-who { flex: 1; min-width: 0; }
-  .card-name { font-weight: 700; font-size: 19px; }
+  .card-name { font-weight: 600; font-size: 19px; }
   .card-time { font-size: 18px; color: var(--text-muted); }
   .plat-icon {
     width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; display: grid; place-items: center;
